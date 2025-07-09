@@ -44,13 +44,33 @@ const config = createConfig({
 })
 
 const queryClient = new QueryClient()
+import { defineChain } from 'viem/chains'
+
+const monadTestnet = defineChain({
+  id: 2710,
+  name: 'Monad Testnet',
+  network: 'monad-testnet',
+  nativeCurrency: {
+    name: 'MON',
+    symbol: 'MON',
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: { http: ['https://testnet-rpc.monad.xyz'] },
+  },
+  blockExplorers: {
+    default: { name: 'MonadScan', url: 'https://monadscan.dev' },
+  },
+  testnet: true,
+})
+
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <WagmiProvider config={config}>
-        <RainbowKitProvider chains={[monadTestnet]} initialChain={monadTestnet}>
-          <MintSBT />
+        <RainbowKitProvider chains={[monadTestnet]} showRecentTransactions={true}>
+        <YourApp />
         </RainbowKitProvider>
       </WagmiProvider>
     </QueryClientProvider>
