@@ -5,16 +5,15 @@ import { RainbowKitProvider, getDefaultWallets } from '@rainbow-me/rainbowkit'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import MintSBT from './MintSBT'
 import '@rainbow-me/rainbowkit/styles.css'
-import { defineChain } from 'viem/chains'
 
-const monadTestnet = defineChain({
+const monadTestnet = {
   id: 2710,
   name: 'Monad Testnet',
   network: 'monad-testnet',
   nativeCurrency: {
+    decimals: 18,
     name: 'MON',
     symbol: 'MON',
-    decimals: 18,
   },
   rpcUrls: {
     default: {
@@ -28,7 +27,8 @@ const monadTestnet = defineChain({
     default: { name: 'MonadScan', url: 'https://monadscan.dev' },
   },
   testnet: true,
-})
+}
+
 
 const { connectors } = getDefaultWallets({
   appName: 'CUAN SBT Mint',
