@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import { useAccount, useConnect, useDisconnect, useWriteContract, useSwitchChain, useChains } from 'wagmi'
 import { injected } from 'wagmi/connectors'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 import ABI from './CuanSBT_ABI.json'
 
 const CONTRACT_ADDRESS = '0x9cAB2e07574c5ee2E2945532A354FdB21114ad5F'
@@ -17,18 +18,6 @@ export default function MintSBT() {
   const { chains } = useChains()
   const [txHash, setTxHash] = useState('')
   const [loading, setLoading] = useState(false)
-
-  import { ConnectButton } from '@rainbow-me/rainbowkit'
-
-function App() {
-  return (
-    <div>
-      <ConnectButton />
-      {/* ... minting logic */}
-    </div>
-  )
-}
-
 
   const handleMint = async () => {
     try {
@@ -69,6 +58,10 @@ function App() {
         textAlign: 'center',
       }}>
         <h1 style={{ marginBottom: '1rem', color: '#222' }}>🎯 CUAN SBT Minter</h1>
+
+        <div style={{ marginBottom: '1rem' }}>
+          <ConnectButton />
+        </div>
 
         {isConnected ? (
           <>
