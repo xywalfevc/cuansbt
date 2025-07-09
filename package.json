@@ -1,0 +1,17 @@
+{
+  "name": "cuan-sbt-mint",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.2.8",
+    "@tanstack/react-query": "^5.20.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "viem": "^1.21.4",
+    "wagmi": "^1.4.13"
+  }
+}
