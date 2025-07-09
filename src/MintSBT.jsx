@@ -1,33 +1,114 @@
-import React from 'react'
-import { useAccount, useWriteContract } from 'wagmi'
-import { parseAbi } from 'viem'
+// MintSBT.jsx
+import React, { useState } from 'react'
+import { useAccount, useConnect, useDisconnect, useWriteContract, useSwitchChain, useChains } from 'wagmi'
+import { injected } from 'wagmi/connectors'
+import ABI from './CuanSBT_ABI.json'
 
-const contractAddress = '0x9cAB2e07574c5ee2E2945532A354FdB21114ad5F'
-const tokenUri = 'https://gateway.pinata.cloud/ipfs/bafkreihqahucweeoxz6533bemiveh6ysq3bjc6nc3dkdr4m7b3jeq5r4nm'
-
-const abi = parseAbi([
-  'function mint(address to, string uri)'
-])
+const CONTRACT_ADDRESS = '0x9cAB2e07574c5ee2E2945532A354FdB21114ad5F'
+const TOKEN_URI = 'https://gateway.pinata.cloud/ipfs/bafkreihqahucweeoxz6533bemiveh6ysq3bjc6nc3dkdr4m7b3jeq5r4nm'
+const MONAD_CHAIN_ID = 2710
 
 export default function MintSBT() {
-  const { address } = useAccount()
-  const { writeContract, isPending } = useWriteContract()
+  const { address, isConnected, chain } = useAccount()
+  const { connect } = useConnect({ connector: injected() })
+  const { disconnect } = useDisconnect()
+  const { writeContractAsync } = useWriteContract()
+  const { switchChain } = useSwitchChain()
+  const { chains } = useChains()
+  const [txHash, setTxHash] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const handleMint = async () => {
-    writeContract({
-      address: contractAddress,
-      abi,
-      functionName: 'mint',
-      args: [address, tokenUri],
-    })
+    try {
+      setLoading(true)
+      const tx = await writeContractAsync({
+        address: CONTRACT_ADDRESS,
+        abi: ABI,
+        functionName: 'mint',
+        args: [address, TOKEN_URI],
+      })
+      setTxHash(tx.hash)
+    } catch (err) {
+      console.error('Mint failed:', err)
+      alert('Mint failed: ' + err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <div style={{ padding: 40 }}>
-      <h1>CUAN SBT Mint</h1>
-      <button onClick={handleMint} disabled={isPending}>
-        {isPending ? 'Minting...' : 'Mint SBT'}
-      </button>
+    <div style={{
+      padding: '2rem',
+      minHeight: '100vh',
+      background: '#f7f8fa',
+      fontFamily: 'sans-serif',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}>
+      <div style={{
+        background: 'white',
+        borderRadius: '12px',
+        boxShadow: '0 6px 20px rgba(0,0,0,0.1)',
+        padding: '2rem',
+        maxWidth: '400px',
+        width: '100%',
+        textAlign: 'center',
+      }}>
+        <h1 style={{ marginBottom: '1rem', color: '#222' }}>🎯 CUAN SBT Minter</h1>
+
+        {isConnected ? (
+          <>
+            <p style={{ fontSize: '0.9rem' }}>Connected as:<br /><strong>{address}</strong></p>
+            <p style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>Network: {chain?.name || 'Unknown'}</p>
+
+            {chain?.id !== MONAD_CHAIN_ID && (
+              <button
+                onClick={() => switchChain({ chainId: MONAD_CHAIN_ID })}
+                style={{
+                  background: '#facc15',
+                  border: 'none',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '8px',
+                  marginBottom: '1rem',
+                  cursor: 'pointer',
+                }}>
+                Switch to Monad Testnet
+              </button>
+            )}
+
+            <button
+              onClick={disconnect}
+              style={{ background: 'transparent', border: '1px solid #ccc', padding: '0.5rem 1rem', borderRadius: '8px', marginBottom: '1rem' }}>
+              Disconnect
+            </button>
+
+            <br />
+            <button
+              onClick={handleMint}
+              disabled={loading}
+              style={{ background: '#2563eb', color: 'white', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 'bold' }}>
+              {loading ? 'Minting...' : 'Mint SBT'}
+            </button>
+
+            {txHash && (
+              <p style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
+                ✅ Minted! <br />
+                <a href={`https://monadscan.dev/tx/${txHash}`} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb' }}>
+                  View Transaction ↗
+                </a>
+              </p>
+            )}
+          </>
+        ) : (
+          <button
+            onClick={() => connect()}
+            style={{ background: '#10b981', color: 'white', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 'bold' }}>
+            Connect Wallet
+          </button>
+        )}
+      </div>
     </div>
   )
 }
