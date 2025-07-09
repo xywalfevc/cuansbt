@@ -24,7 +24,7 @@ const monadTestnet = {
     },
   },
   blockExplorers: {
-    default: { name: 'MonadScan', url: 'https://monadscan.dev' },
+    default: { name: 'MonadScan', url: 'https://testnet.monadexplorer.com/' },
   },
   testnet: true,
 }
