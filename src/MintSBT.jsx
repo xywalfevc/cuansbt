@@ -18,6 +18,18 @@ export default function MintSBT() {
   const [txHash, setTxHash] = useState('')
   const [loading, setLoading] = useState(false)
 
+  import { ConnectButton } from '@rainbow-me/rainbowkit'
+
+function App() {
+  return (
+    <div>
+      <ConnectButton />
+      {/* ... minting logic */}
+    </div>
+  )
+}
+
+
   const handleMint = async () => {
     try {
       setLoading(true)
