@@ -1,6 +1,12 @@
 // MintSBT.jsx
 import React, { useState } from 'react'
-import { useAccount, useConnect, useDisconnect, useWriteContract, useSwitchChain, useChains } from 'wagmi'
+import {
+  useAccount,
+  useConnect,
+  useDisconnect,
+  useWriteContract,
+  useSwitchChain,
+} from 'wagmi'
 import { injected } from 'wagmi/connectors'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import ABI from './CuanSBT_ABI.json'
@@ -15,11 +21,15 @@ export default function MintSBT() {
   const { disconnect } = useDisconnect()
   const { writeContractAsync } = useWriteContract()
   const { switchChain } = useSwitchChain()
-  const { chains } = useChains()
   const [txHash, setTxHash] = useState('')
   const [loading, setLoading] = useState(false)
 
   const handleMint = async () => {
+    if (!address) {
+      alert('Wallet not connected')
+      return
+    }
+
     try {
       setLoading(true)
       const tx = await writeContractAsync({
@@ -63,7 +73,7 @@ export default function MintSBT() {
           <ConnectButton />
         </div>
 
-        {isConnected ? (
+        {isConnected && (
           <>
             <p style={{ fontSize: '0.9rem' }}>Connected as:<br /><strong>{address}</strong></p>
             <p style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>Network: {chain?.name || 'Unknown'}</p>
@@ -85,7 +95,13 @@ export default function MintSBT() {
 
             <button
               onClick={disconnect}
-              style={{ background: 'transparent', border: '1px solid #ccc', padding: '0.5rem 1rem', borderRadius: '8px', marginBottom: '1rem' }}>
+              style={{
+                background: 'transparent',
+                border: '1px solid #ccc',
+                padding: '0.5rem 1rem',
+                borderRadius: '8px',
+                marginBottom: '1rem'
+              }}>
               Disconnect
             </button>
 
@@ -93,7 +109,14 @@ export default function MintSBT() {
             <button
               onClick={handleMint}
               disabled={loading}
-              style={{ background: '#2563eb', color: 'white', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 'bold' }}>
+              style={{
+                background: '#2563eb',
+                color: 'white',
+                border: 'none',
+                padding: '0.6rem 1.2rem',
+                borderRadius: '8px',
+                fontWeight: 'bold'
+              }}>
               {loading ? 'Minting...' : 'Mint SBT'}
             </button>
 
@@ -106,12 +129,6 @@ export default function MintSBT() {
               </p>
             )}
           </>
-        ) : (
-          <button
-            onClick={() => connect()}
-            style={{ background: '#10b981', color: 'white', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 'bold' }}>
-            Connect Wallet
-          </button>
         )}
       </div>
     </div>
